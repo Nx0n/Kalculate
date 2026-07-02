@@ -1,9 +1,9 @@
 import { View, Text } from 'react-native';
 import Card from '../components/Card';
-import createScreenStyles from '../styles/ScreenStyles';
+import createProfileStyles from '../styles/ProfileStyles';
 
 export default function ProfileScreen({ isDark }) {
-  const styles = createScreenStyles(isDark);
+  const styles = createProfileStyles(isDark);
 
   return (
     <View>

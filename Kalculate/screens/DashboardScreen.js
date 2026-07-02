@@ -1,9 +1,9 @@
 import { View, Text } from 'react-native';
 import Card from '../components/Card';
-import createScreenStyles from '../styles/ScreenStyles';
+import createDashboardStyles from '../styles/DashboardStyles';
 
 export default function DashboardScreen({ isDark }) {
-  const styles = createScreenStyles(isDark);
+  const styles = createDashboardStyles(isDark);
   return (
     <View>
       <Text style={styles.title}>Dashboard</Text>

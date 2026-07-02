@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native';
 import Card from '../components/Card';
-import createScreenStyles from '../styles/ScreenStyles';
+import createCalculatorStyles from '../styles/CalculatorStyles';
 
 const calculatorData = {
   bmi: '22.3',
@@ -17,7 +17,7 @@ const calculatorData = {
 };
 
 export default function CalculatorScreen({ isDark }) {
-  const styles = createScreenStyles(isDark);
+  const styles = createCalculatorStyles(isDark);
 
   return (
     <View>

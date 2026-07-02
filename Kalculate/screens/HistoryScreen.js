@@ -1,9 +1,9 @@
 import { View, Text } from 'react-native';
 import Card from '../components/Card';
-import createScreenStyles from '../styles/ScreenStyles';
+import createHistoryStyles from '../styles/HistoryStyles';
 
 export default function HistoryScreen({ isDark }) {
-  const styles = createScreenStyles(isDark);
+  const styles = createHistoryStyles(isDark);
 
   return (
     <View>
