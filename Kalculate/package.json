@@ -5,18 +5,27 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
     "@supabase/supabase-js": "^2.110.2",
-    "expo": "~57.0.1",
-    "expo-status-bar": "~57.0.0",
+    "expo": "~57.0.8",
+    "expo-image-picker": "~57.0.6",
+    "expo-linking": "~57.0.4",
+    "expo-status-bar": "~57.0.1",
     "react": "19.2.3",
+    "react-dom": "19.2.3",
     "react-native": "0.86.0",
-    "react-native-url-polyfill": "^3.0.0"
+    "react-native-url-polyfill": "^3.0.0",
+    "react-native-web": "^0.21.2"
   },
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "import:usda": "node scripts/importUsdaFoods.js"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "@types/react": "~19.2.4",
+    "supabase": "^2.109.1",
+    "typescript": "~6.0.3"
+  }
 }

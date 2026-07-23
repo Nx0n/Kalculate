@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { getMyProfile, addWeightLog, getWeightHistory, updateMyProfile } from '../services/profileService';
 
 // hook นี้จัดการข้อมูลโปรไฟล์และประวัติน้ำหนักของผู้ใช้
-export default function useProfile() {
+export default function useProfile(enabled = true) {
   const [profile, setProfile] = useState(null);
   const [weightHistory, setWeightHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,6 +16,16 @@ export default function useProfile() {
   }, []);
 
   const refreshProfile = useCallback(async () => {
+    if (!enabled) {
+      if (isMountedRef.current) {
+        setProfile(null);
+        setWeightHistory([]);
+        setError(null);
+        setLoading(false);
+      }
+      return;
+    }
+
     try {
       setLoading(true);
       setError(null);
@@ -33,7 +43,7 @@ export default function useProfile() {
         setLoading(false);
       }
     }
-  }, []);
+  }, [enabled]);
 
   useEffect(() => {
     refreshProfile();

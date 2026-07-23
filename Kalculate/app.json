@@ -2,6 +2,7 @@
   "expo": {
     "name": "Kalculate",
     "slug": "Kalculate",
+    "scheme": "kalculate",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,8 +16,20 @@
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
-      }
+      },
+      "package": "com.anonymous.Kalculate"
     },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "อนุญาตให้ Kalculate เข้าถึงรูปภาพเพื่อค้นหาอาหาร",
+          "cameraPermission": "อนุญาตให้ Kalculate ใช้กล้องเพื่อถ่ายรูปอาหาร",
+          "microphonePermission": false
+        }
+      ],
+      "expo-status-bar"
+    ],
     "web": {
       "favicon": "./assets/favicon.png"
     }

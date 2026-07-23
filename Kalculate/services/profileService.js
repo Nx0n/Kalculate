@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-
+import * as Linking from 'expo-linking';
 // service นี้รับผิดชอบข้อมูลโปรไฟล์และน้ำหนักของผู้ใช้ โดยใช้ Supabase Auth + PostgreSQL
 
 function buildProfilePayload(profileData) {
@@ -42,11 +42,12 @@ export async function signUp({ email, password, displayName }) {
   if (!email || !password) {
     throw new Error('อีเมลและรหัสผ่านจำเป็นต้องมีค่า');
   }
-
+const redirectUrl = Linking.createURL("/");
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
+    emailRedirectTo: redirectUrl,
       data: {
         display_name: displayName || '',
       },
