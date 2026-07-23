@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Feather } from '@expo/vector-icons';
 import createAuthStyles from '../styles/AuthStyles';
 import { calculateBmi, getBmiCategory } from '../services/nutritionService';
 
@@ -17,8 +19,20 @@ export default function RegisterScreen({ isDark, onRegister, onSwitchToLogin }) 
     birthDate: '', // Format: YYYY-MM-DD
   });
 
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [date, setDate] = useState(new Date(2000, 0, 1));
+
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const onDateChange = (event, selectedDate) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      setDate(selectedDate);
+      const formattedDate = selectedDate.toISOString().split('T')[0];
+      handleInputChange('birthDate', formattedDate);
+    }
   };
 
   const handleRegister = () => {
@@ -34,7 +48,6 @@ export default function RegisterScreen({ isDark, onRegister, onSwitchToLogin }) 
       return;
     }
 
-    // คำนวณ BMI เบื้องต้นเพื่อแสดงผลหรือส่งต่อ
     try {
       const bmi = calculateBmi({ weightKg: weight, heightCm: height });
       const category = getBmiCategory(bmi);
@@ -149,13 +162,25 @@ export default function RegisterScreen({ isDark, onRegister, onSwitchToLogin }) 
 
           <View style={styles.inputContainer}>
             <Text style={styles.label}>วันเดือนปีเกิด</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="YYYY-MM-DD (เช่น 1995-05-20)"
-              placeholderTextColor={isDark ? '#64748b' : '#94a3b8'}
-              value={formData.birthDate}
-              onChangeText={(v) => handleInputChange('birthDate', v)}
-            />
+            <TouchableOpacity
+              style={[styles.input, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}
+              onPress={() => setShowDatePicker(true)}
+            >
+              <Text style={{ color: formData.birthDate ? (isDark ? '#f8fafc' : '#0f172a') : (isDark ? '#64748b' : '#94a3b8'), fontSize: 16 }}>
+                {formData.birthDate || 'เลือกวันเกิด'}
+              </Text>
+              <Feather name="calendar" size={20} color={isDark ? '#94a3b8' : '#64748b'} />
+            </TouchableOpacity>
+
+            {showDatePicker && (
+              <DateTimePicker
+                value={date}
+                mode="date"
+                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                onChange={onDateChange}
+                maximumDate={new Date()}
+              />
+            )}
           </View>
 
           <TouchableOpacity style={styles.button} onPress={handleRegister}>

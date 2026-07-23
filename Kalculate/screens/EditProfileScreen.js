@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { Feather } from '@expo/vector-icons';
 import createProfileStyles from '../styles/ProfileStyles';
 import createAuthStyles from '../styles/AuthStyles';
@@ -16,8 +17,20 @@ export default function EditProfileScreen({ isDark, user, onUpdateUser, onCancel
     birthDate: user?.birthDate || '',
   });
 
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [date, setDate] = useState(user?.birthDate ? new Date(user.birthDate) : new Date(2000, 0, 1));
+
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const onDateChange = (event, selectedDate) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      setDate(selectedDate);
+      const formattedDate = selectedDate.toISOString().split('T')[0];
+      handleInputChange('birthDate', formattedDate);
+    }
   };
 
   const handleSave = () => {
@@ -93,12 +106,26 @@ export default function EditProfileScreen({ isDark, user, onUpdateUser, onCancel
           </View>
 
           <View style={authStyles.inputContainer}>
-            <Text style={authStyles.label}>วันเดือนปีเกิด (YYYY-MM-DD)</Text>
-            <TextInput
-              style={authStyles.input}
-              value={formData.birthDate}
-              onChangeText={(v) => handleInputChange('birthDate', v)}
-            />
+            <Text style={authStyles.label}>วันเดือนปีเกิด</Text>
+            <TouchableOpacity
+              style={[authStyles.input, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}
+              onPress={() => setShowDatePicker(true)}
+            >
+              <Text style={{ color: isDark ? '#f8fafc' : '#0f172a', fontSize: 16 }}>
+                {formData.birthDate || 'เลือกวันเกิด'}
+              </Text>
+              <Feather name="calendar" size={20} color={isDark ? '#94a3b8' : '#64748b'} />
+            </TouchableOpacity>
+
+            {showDatePicker && (
+              <DateTimePicker
+                value={date}
+                mode="date"
+                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                onChange={onDateChange}
+                maximumDate={new Date()}
+              />
+            )}
           </View>
 
           <TouchableOpacity style={authStyles.button} onPress={handleSave}>

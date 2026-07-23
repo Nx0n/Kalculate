@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Card from '../components/Card';
 import createDashboardStyles from '../styles/DashboardStyles';
@@ -28,7 +28,7 @@ export default function DashboardScreen({ isDark, user, consumedToday = 0 }) {
       const bmi = calculateBmi({ weightKg: weight, heightCm: height });
       const bmiCategory = getBmiCategory(bmi);
       const bmr = calculateBmr({ sex, age, weightKg: weight, heightCm: height });
-      const tdee = calculateTdee(bmr, 'moderate');
+      const tdee = calculateTdee(bmr, user.activityLevel || 'moderate');
 
       // ใช้ฟังก์ชันใหม่ที่คำนวณตาม BMI เพื่อสุขภาพ
       const smartTarget = calculateSmartTargetCalories({ bmi, tdee, sex });
@@ -51,7 +51,11 @@ export default function DashboardScreen({ isDark, user, consumedToday = 0 }) {
   const percentConsumed = Math.min(Math.round((consumedToday / dailyGoal) * 100), 100);
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ padding: 24, paddingBottom: 100 }}
+      showsVerticalScrollIndicator={false}
+    >
       <Text style={styles.title}>สวัสดี, {user?.firstName || 'คุณ'}</Text>
       <Text style={[styles.subtitle, { color: '#10b981', fontWeight: '700' }]}>
         {stats?.recommendation}
@@ -115,6 +119,6 @@ export default function DashboardScreen({ isDark, user, consumedToday = 0 }) {
           </Card>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }

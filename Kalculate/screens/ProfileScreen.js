@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Card from '../components/Card';
 import createProfileStyles from '../styles/ProfileStyles';
@@ -7,7 +7,11 @@ export default function ProfileScreen({ isDark, user, onLogout, onEdit }) {
   const styles = createProfileStyles(isDark);
 
   return (
-    <View>
+    <ScrollView
+      style={{ flex: 1 }}
+      contentContainerStyle={{ padding: 24, paddingBottom: 100 }}
+      showsVerticalScrollIndicator={false}
+    >
       <View style={styles.profileHeader}>
         <View style={styles.avatar}>
           <Feather name="user" size={40} color={isDark ? '#94a3b8' : '#64748b'} />
@@ -74,6 +78,6 @@ export default function ProfileScreen({ isDark, user, onLogout, onEdit }) {
         <Feather name="log-out" size={20} color="white" />
         <Text style={{ color: 'white', fontWeight: '700', fontSize: 16 }}>ออกจากระบบ</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }

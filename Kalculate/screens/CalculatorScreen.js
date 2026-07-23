@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import Card from '../components/Card';
 import createCalculatorStyles from '../styles/CalculatorStyles';
 import {
@@ -27,9 +27,8 @@ export default function CalculatorScreen({ isDark, user }) {
       const bmi = calculateBmi({ weightKg: weight, heightCm: height });
       const bmiCategory = getBmiCategory(bmi);
       const bmr = calculateBmr({ sex, age, weightKg: weight, heightCm: height });
-      const tdee = calculateTdee(bmr, 'moderate');
+      const tdee = calculateTdee(bmr, user.activityLevel || 'moderate');
 
-      // ใช้ Smart Calculation ตาม BMI เพื่อเป้าหมายสุขภาพ
       const smartTarget = calculateSmartTargetCalories({ bmi, tdee, sex });
       const macros = calculateHealthMacroTargets(smartTarget.targetCalories, bmi);
 
@@ -54,7 +53,7 @@ export default function CalculatorScreen({ isDark, user }) {
 
   if (!stats) {
     return (
-      <View style={styles.container}>
+      <View style={{ flex: 1, padding: 24 }}>
         <Text style={styles.title}>ไม่พบข้อมูล</Text>
         <Text style={styles.subtitle}>กรุณาเข้าสู่ระบบหรือตั้งค่าข้อมูลส่วนตัวเพื่อคำนวณ</Text>
       </View>
@@ -62,7 +61,11 @@ export default function CalculatorScreen({ isDark, user }) {
   }
 
   return (
-    <View>
+    <ScrollView
+      style={{ flex: 1 }}
+      contentContainerStyle={{ padding: 24, paddingBottom: 100 }}
+      showsVerticalScrollIndicator={false}
+    >
       <Text style={styles.title}>วิเคราะห์สุขภาพ</Text>
       <Text style={[styles.subtitle, { color: '#10b981', fontWeight: '700' }]}>
         {stats.recommendation}
@@ -119,6 +122,6 @@ export default function CalculatorScreen({ isDark, user }) {
           *คำนวณสัดส่วนโปรตีนสูงขึ้นตามค่า BMI เพื่อรักษามวลกล้ามเนื้อและควบคุมน้ำหนัก
         </Text>
       </Card>
-    </View>
+    </ScrollView>
   );
 }
