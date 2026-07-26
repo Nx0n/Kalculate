@@ -134,8 +134,7 @@ export default function EditProfileScreen({ isDark, user, onUpdateUser, onCancel
 
           <TouchableOpacity
             style={[authStyles.button, { backgroundColor: 'transparent', borderWidth: 1, borderColor: '#ef4444', marginTop: 12 }]}
-            onPress={onCancel}
-          >
+            onPress={onCancel}>
             <Text style={[authStyles.buttonText, { color: '#ef4444' }]}>ยกเลิก</Text>
           </TouchableOpacity>
         </View>

@@ -177,30 +177,8 @@ export default function FoodScreen({ isDark, user, consumedToday = 0, meals = {}
         onPress={() => setIsModalVisible(true)}
       >
         <Feather name="database" size={20} color="white" />
-        <Text style={styles.databaseButtonText}>เลือกจากฐานข้อมูลอาหาร</Text>
+        <Text style={styles.databaseButtonText}>เลือกรายการอาหาร</Text>
       </TouchableOpacity>
-
-      <View style={styles.popularSection}>
-        <Text style={styles.sectionTitle}>เมนูแนะนำ</Text>
-        <View style={styles.popularGrid}>
-          {POPULAR_FOODS.map((food) => (
-            <TouchableOpacity
-              key={food.id}
-              style={[styles.foodItem, styles.popularFoodItem]}
-              onPress={() => handleAddFood(food)}
-            >
-              <View style={styles.foodIcon}>
-                <Feather name="coffee" size={18} color="#10b981" />
-              </View>
-              <View style={styles.foodInfo}>
-                <Text style={styles.foodName}>{food.name_th}</Text>
-                <Text style={styles.foodDetail}>{food.category} · {food.calories} kcal</Text>
-              </View>
-              <Feather name="plus-circle" size={20} color="#10b981" />
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
 
       <View style={styles.loggedSection}>
         <Text style={styles.sectionTitle}>รายการที่บันทึกแล้ว ({mealCategories.find(c => c.key === activeTab)?.label})</Text>
@@ -225,7 +203,7 @@ export default function FoodScreen({ isDark, user, consumedToday = 0, meals = {}
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={[styles.sectionTitle, styles.modalSectionTitle]}>ฐานข้อมูลอาหาร</Text>
+              <Text style={[styles.sectionTitle, styles.modalSectionTitle]}>รายการอาหาร</Text>
               <TouchableOpacity onPress={() => setIsModalVisible(false)}>
                 <Feather name="x" size={24} color={isDark ? '#f8fafc' : '#0f172a'} />
               </TouchableOpacity>
