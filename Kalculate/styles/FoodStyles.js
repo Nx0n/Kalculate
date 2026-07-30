@@ -129,6 +129,21 @@ export default function createFoodStyles(isDark) {
       fontSize: 16,
       marginLeft: 10,
     },
+    cameraButton: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: '#10b981',
+  paddingVertical: 14,
+  borderRadius: 12,
+  marginTop: 12,
+},
+cameraButtonText: {
+  color: '#fff',
+  fontSize: 16,
+  fontWeight: '600',
+  marginLeft: 8,
+},
     popularGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
@@ -240,6 +255,21 @@ export default function createFoodStyles(isDark) {
     },
     loader: {
       marginVertical: 10,
+    },
+    imagePreviewContainer: {
+      marginBottom: 12,
+      alignItems: 'center',
+    },
+    imagePreview: {
+      width: '100%',
+      height: 180,
+      borderRadius: 16,
+      backgroundColor: isDark ? '#0f172a' : '#f1f5f9',
+    },
+    imagePreviewLabel: {
+      marginTop: 8,
+      fontSize: 12,
+      color: isDark ? '#94a3b8' : '#64748b',
     }
   });
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, ScrollView, Modal } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, ScrollView, Modal, Image } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { Feather } from '@expo/vector-icons';
 import createFoodStyles from '../styles/FoodStyles';
 import { searchFoods, getFoodWithServings } from '../services/foodService';
@@ -32,6 +33,8 @@ export default function FoodScreen({ isDark, user, consumedToday = 0, meals = {}
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedImageUri, setSelectedImageUri] = useState(null);
+  const [selectedImageLabel, setSelectedImageLabel] = useState('');
 
   const healthStats = useMemo(() => {
     try {
@@ -130,6 +133,119 @@ export default function FoodScreen({ isDark, user, consumedToday = 0, meals = {}
     ]);
   };
 
+  const analyzeImageForFood = async (imageAsset) => {
+    if (!imageAsset?.uri) {
+      throw new Error('ไม่พบไฟล์รูปภาพ');
+    }
+
+    const apiKey = process.env.EXPO_PUBLIC_GEMINI_API_KEY || process.env.EXPO_PUBLIC_AI_API_KEY;
+    const aiEndpoint = process.env.EXPO_PUBLIC_AI_ENDPOINT || 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+    if (!apiKey) {
+      throw new Error('ยังไม่มี Gemini API key ที่ถูกตั้งค่า');
+    }
+
+    const imageBase64 = imageAsset.base64 || imageAsset.uri?.split(',')[1];
+    if (!imageBase64) {
+      throw new Error('รูปภาพไม่สามารถแปลงเป็นข้อมูล base64 สำหรับ Gemini ได้');
+    }
+
+    try {
+      const response = await fetch(`${aiEndpoint}?key=${apiKey}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: 'ดูภาพอาหารนี้ แล้วตอบเป็นชื่อเมนูอาหารภาษาไทยที่สั้นและชัดเจนที่สุดเพียงคำเดียวหรือวลีสั้น ๆ ไม่ต้องอธิบายและไม่ต้องมีคำอื่น ๆ',
+                },
+                {
+                  inlineData: {
+                    mimeType: imageAsset.type || 'image/jpeg',
+                    data: imageBase64,
+                  },
+                },
+              ],
+            },
+          ],
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Gemini API error: ${errorText}`);
+      }
+
+      const data = await response.json();
+      const content = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      const cleaned = content.replace(/[`\n\r]/g, '').trim();
+      if (!cleaned) {
+        throw new Error('Gemini ไม่ได้ตอบกลับคำที่ใช้ค้นหา');
+      }
+      return cleaned;
+    } catch (error) {
+      throw new Error(error?.message || 'ไม่สามารถวิเคราะห์ภาพด้วย Gemini ได้');
+    }
+  };
+
+  const handleImageSearch = async (source) => {
+    try {
+      const permission = source === 'camera'
+        ? await ImagePicker.requestCameraPermissionsAsync()
+        : await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (!permission.granted) {
+        Alert.alert('ไม่สามารถเข้าถึงรูปภาพได้', 'กรุณาอนุญาตให้เข้าถึงกล้องหรือแกลเลอรีก่อนใช้ฟีเจอร์นี้');
+        return;
+      }
+
+      const pickerResult = source === 'camera'
+        ? await ImagePicker.launchCameraAsync({ allowsEditing: true, quality: 0.8, base64: true })
+        : await ImagePicker.launchImageLibraryAsync({ allowsEditing: true, quality: 0.8, base64: true });
+
+      if (pickerResult.canceled) {
+        return;
+      }
+
+      const asset = pickerResult.assets?.[0];
+      if (!asset?.uri) {
+        return;
+      }
+
+      setSelectedImageUri(asset.uri);
+      setSelectedImageLabel(asset.fileName || 'รูปที่เลือก');
+      setLoading(true);
+      setSearchQuery('');
+      setSearchResults([]);
+
+      const detectedQuery = await analyzeImageForFood(asset);
+      const normalizedQuery = detectedQuery.trim();
+      setSearchQuery(normalizedQuery);
+
+      const results = await searchFoods(normalizedQuery);
+      setSearchResults(results);
+
+      if (!results.length) {
+        Alert.alert('ไม่พบผลลัพธ์', `ระบบยังไม่พบเมนูที่ตรงกับคำว่า "${normalizedQuery}" จากฐานข้อมูล`);
+      }
+    } catch (error) {
+      Alert.alert('วิเคราะห์รูปภาพไม่สำเร็จ', error.message || 'กรุณาลองใหม่อีกครั้ง');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openImagePickerOptions = () => {
+    Alert.alert('เลือกรูปภาพ', 'คุณต้องการใช้รูปภาพจากตัวเลือกใด', [
+      { text: 'ถ่ายรูป', onPress: () => handleImageSearch('camera') },
+      { text: 'เลือกจากแกลเลอรี', onPress: () => handleImageSearch('library') },
+      { text: 'ยกเลิก', style: 'cancel' },
+    ]);
+  };
+
   const progress = Math.min(consumedToday / healthStats.goal, 1);
   const currentLoggedMeals = meals[activeTab] || [];
 
@@ -223,6 +339,13 @@ export default function FoodScreen({ isDark, user, consumedToday = 0, meals = {}
 
             {loading && <ActivityIndicator color="#10b981" style={styles.loader} />}
 
+            {selectedImageUri ? (
+              <View style={styles.imagePreviewContainer}>
+                <Image source={{ uri: selectedImageUri }} style={styles.imagePreview} />
+                <Text style={styles.imagePreviewLabel}>{selectedImageLabel || 'รูปที่เลือก'}</Text>
+              </View>
+            ) : null}
+
             <ScrollView showsVerticalScrollIndicator={false}>
               {searchResults.map((item) => (
                 <TouchableOpacity key={item.id} style={styles.foodItem} onPress={() => handleAddFood(item)}>
@@ -239,6 +362,10 @@ export default function FoodScreen({ isDark, user, consumedToday = 0, meals = {}
                 <Text style={styles.emptyText}>ไม่พบข้อมูลอาหาร</Text>
               )}
             </ScrollView>
+            <TouchableOpacity style={styles.cameraButton} onPress={openImagePickerOptions}>
+              <Feather name="camera" size={22} color="#fff" />
+              <Text style={styles.cameraButtonText}>เพิ่มจากรูปภาพ</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
