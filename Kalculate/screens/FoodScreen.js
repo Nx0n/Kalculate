@@ -15,17 +15,6 @@ const mealCategories = [
   { key: 'snack', label: 'ว่าง' },
 ];
 
-const POPULAR_FOODS = [
-  { id: 'p1', name_th: 'ข้าวผัดกะเพราไก่ไข่ดาว', calories: 630, category: 'อาหารจานเดียว' },
-  { id: 'p2', name_th: 'ข้าวมันไก่', calories: 590, category: 'อาหารจานเดียว' },
-  { id: 'p3', name_th: 'ผัดไทยกุ้งสด', calories: 480, category: 'เมนูเส้น' },
-  { id: 'p4', name_th: 'ส้มตำไทย', calories: 120, category: 'เมนูยำ/ตำ' },
-  { id: 'p5', name_th: 'อกไก่ย่าง', calories: 165, category: 'โปรตีน' },
-  { id: 'p6', name_th: 'ไข่ต้ม (1 ฟอง)', calories: 75, category: 'โปรตีน' },
-  { id: 'p7', name_th: 'ก๋วยเตี๋ยวเส้นเล็กน้ำใส', calories: 350, category: 'เมนูเส้น' },
-  { id: 'p8', name_th: 'ข้าวไข่เจียว', calories: 445, category: 'อาหารจานเดียว' },
-];
-
 export default function FoodScreen({ isDark, user, consumedToday = 0, meals = {}, onNutritionChanged }) {
   const styles = createFoodStyles(isDark);
   const [activeTab, setActiveTab] = useState('breakfast');
